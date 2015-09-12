@@ -36,7 +36,7 @@ describe("Persistent Node Chat Server", function() {
     dbConnection.end();
   });
 
-  it("Should insert posted messages to the DB", function(done) {
+  xit("Should insert posted messages to the DB", function(done) {
     // Post the user to the chat server.
     request({ method: "POST",
               uri: "http://127.0.0.1:3000/classes/users",
@@ -74,11 +74,12 @@ describe("Persistent Node Chat Server", function() {
 
   it("Should output all messages from the DB", function(done) {
     // Let's insert a message into the db
-       var tablename = ""; // TODO: fill this out
+       var tablename = "messages"; // TODO: fill this out
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
     // them up to you. */
-
+        var queryString = "INSERT INTO messages (text) values (\"Men like you can never change!\")";
+        var queryArgs = [];
     dbConnection.query(queryString, queryArgs, function(err) {
       if (err) { throw err; }
 
@@ -87,7 +88,29 @@ describe("Persistent Node Chat Server", function() {
       request("http://127.0.0.1:3000/classes/messages", function(error, response, body) {
         var messageLog = JSON.parse(body);
         expect(messageLog[0].text).to.equal("Men like you can never change!");
-        expect(messageLog[0].roomname).to.equal("main");
+        //expect(messageLog[0].roomname).to.equal("main");
+        done();
+      });
+    });
+  });
+
+  it("Should output all users from the DB", function(done) {
+    // Let's insert a message into the db
+       var tablename = "users"; // TODO: fill this out
+    // TODO - The exact query string and query args to use
+    // here depend on the schema you design, so I'll leave
+    // them up to you. */
+        var queryString = "INSERT INTO users (username) values (\"BOB\")";
+        var queryArgs = [];
+    dbConnection.query(queryString, queryArgs, function(err) {
+      if (err) { throw err; }
+
+      // Now query the Node chat server and see if it returns
+      // the message we just inserted:
+      request("http://127.0.0.1:3000/classes/users", function(error, response, body) {
+        var userLog = JSON.parse(body);
+        expect(userLog[0].username).to.equal("BOB");
+        //expect(messageLog[0].roomname).to.equal("main");
         done();
       });
     });
